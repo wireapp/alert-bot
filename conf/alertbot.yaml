@@ -1,0 +1,19 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8050
+    - type: https
+      port: 443
+      keyStorePath: keystore.jks
+      certAlias: myservercert
+      validateCerts: false
+      validatePeers: false
+
+  adminConnectors:
+    - type: http
+      port: 8051
+  #requestLog:
+    #appenders: []
+
+cryptoDir: /var/lib/alertbot/crypto  # path to dir where to story crypto box files - directory must exists!
+apiKeys: []
