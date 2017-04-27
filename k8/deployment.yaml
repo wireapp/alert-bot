@@ -43,13 +43,14 @@ spec:
               containerPort: 8050
               protocol: TCP
 
+            - name: admin
+              containerPort: 8051
+              protocol: TCP
+
             - name: metrics
               containerPort: 8081
               protocol: TCP
 
-            - name: admin
-              containerPort: 8051
-              protocol: TCP
           env:
             - name: TOKEN
               valueFrom:
@@ -78,13 +79,31 @@ spec:
 
           command:
             - "/usr/bin/java"
+            - "-javaagent:/opt/wire/lib/jmx_prometheus_javaagent.jar=8081:metrics.yaml"
             - "-Ddw.server.applicationConnectors[1].keyStorePassword=$(KEYSTORE_PASSWORD)"
             - "-Ddw.auth=$(TOKEN)"
             - "-Ddw.apiKeys=$(API_KEYS)"
             - "-jar"
-            - "alertbot.jar"
+            - "/opt/alertbot/alertbot.jar"
             - "server"
             - "/etc/alertbot/alertbot.yaml"
+
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8051
+            initialDelaySeconds: 60
+            timeoutSeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+            successThreshold: 1
+
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8051
+            initialDelaySeconds: 60
+            timeoutSeconds: 15
 
       volumes:
         - name: alertbot-disk
@@ -118,6 +137,3 @@ spec:
     port: 443
     protocol: TCP
 
-  - name: admin
-    port: 8051
-    targetPort: 8051

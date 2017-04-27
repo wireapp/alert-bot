@@ -12,8 +12,8 @@ server:
   adminConnectors:
     - type: http
       port: 8051
-  #requestLog:
-    #appenders: []
+  requestLog:
+    appenders: []
 
 cryptoDir: /var/lib/alertbot/crypto  # path to dir where to story crypto box files - directory must exists!
 apiKeys: []
