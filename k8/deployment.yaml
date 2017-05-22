@@ -21,8 +21,8 @@ spec:
         run:  alertbot
         env:  prod
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8081"
+        #prometheus.io/scrape: "true"
+        #prometheus.io/port: "8081"
     spec:
       restartPolicy: Always
 
@@ -129,10 +129,6 @@ spec:
     run: alertbot
 
   ports:
-  - name: http
-    port: 80
-    targetPort: 8050
-
   - name: https
     port: 443
     protocol: TCP

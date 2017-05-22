@@ -15,36 +15,30 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 package com.wire.bots.alert;
+import com.wire.bots.alert.model.Config;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.Logger;
 import com.wire.bots.sdk.WireClient;
-import com.wire.bots.alert.model.Config;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.sql.SQLException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-public class Broadcaster {
+class Broadcaster {
     private final ClientRepo repo;
     private final ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(20);
     private final Config config;
 
-    public Broadcaster(ClientRepo repo, Config config) {
+    Broadcaster(ClientRepo repo, Config config) {
         this.repo = repo;
         this.config = config;
     }
 
-    public void broadcastText(final String messageId, final String text) throws SQLException {
+    void broadcastText(final String messageId, final String text) throws SQLException {
         for (File botDir : getCryptoDirs()) {
             final String botId = botDir.getName();
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    sendText(messageId, text, botId);
-                }
-            });
+            executor.execute(() -> sendText(messageId, text, botId));
         }
     }
 
@@ -59,12 +53,9 @@ public class Broadcaster {
 
     private File[] getCryptoDirs() {
         File dir = new File(config.getCryptoDir());
-        return dir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                String botId = file.getName();
-                return repo.getWireClient(botId) != null;
-            }
+        return dir.listFiles(file -> {
+            String botId = file.getName();
+            return repo.getWireClient(botId) != null;
         });
     }
 }

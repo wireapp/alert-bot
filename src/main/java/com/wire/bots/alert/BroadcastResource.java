@@ -42,7 +42,7 @@ public class BroadcastResource {
         }
     };
 
-    public BroadcastResource(ClientRepo repo, Config conf) {
+    BroadcastResource(ClientRepo repo, Config conf) {
         this.conf = conf;
         exec = new Broadcaster(repo, conf);
     }

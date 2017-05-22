@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertbot-local
+spec:
+  selector:
+    name: alertbot
+  type: NodePort
+  ports:
+    - name: web
+      port: 80
+      targetPort: 8080
+      protocol: TCP
