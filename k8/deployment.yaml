@@ -91,7 +91,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthcheck
-              port: 8051
+              port: 8081
             initialDelaySeconds: 60
             timeoutSeconds: 30
             periodSeconds: 10
@@ -101,7 +101,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /healthcheck
-              port: 8051
+              port: 8081
             initialDelaySeconds: 60
             timeoutSeconds: 15
 
