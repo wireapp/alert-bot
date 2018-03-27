@@ -2,18 +2,9 @@ server:
   applicationConnectors:
     - type: http
       port: 8080
-    - type: https
-      port: 443
-      keyStorePath: keystore.jks
-      certAlias: myservercert
-      validateCerts: false
-      validatePeers: false
 
-  adminConnectors:
-    - type: http
-      port: 8081
   requestLog:
-    appenders: []
+  appenders: []
 
 cryptoDir: /var/lib/alertbot/crypto  # path to dir where to store crypto box files - directory must exists!
 apiKeys: []
