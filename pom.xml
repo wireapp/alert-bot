@@ -6,66 +6,28 @@
 
     <artifactId>alert-bot</artifactId>
     <groupId>com.wire.bots</groupId>
-    <version>1.1.0</version>
-
-    <properties>
-        <bot.version>1.0.7</bot.version>
-    </properties>
+    <version>1.2.0</version>
 
     <repositories>
         <repository>
-            <id>bintray</id>
-            <name>Bintray</name>
-            <url>https://dl.bintray.com/wire-android/snapshots/</url>
-            <layout>default</layout>
+            <id>lithium</id>
+            <url>https://packagecloud.io/dkovacevic/lithium/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
-
-    <profiles>
-        <profile>
-            <id>darwin</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <classifier>darwin-x86_64</classifier>
-                <exclude>linux-x86_64</exclude>
-            </properties>
-        </profile>
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                </os>
-            </activation>
-            <properties>
-                <classifier>linux-x86_64</classifier>
-                <exclude>darwin-x86_64</exclude>
-            </properties>
-        </profile>
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <properties>
-                <classifier>win-x86_64</classifier>
-                <exclude1>darwin-x86_64</exclude1>
-                <exclude2>linux-x86_64</exclude2>
-            </properties>
-        </profile>
-    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>com.wire.bots</groupId>
-            <artifactId>bot-sdk</artifactId>
-            <version>${bot.version}</version>
+            <artifactId>lithium</artifactId>
+            <version>2.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.wire.bots</groupId>
+            <artifactId>cryptobox</artifactId>
+            <version>0.1.1</version>
         </dependency>
     </dependencies>
 
@@ -95,11 +57,6 @@
                 <configuration>
                     <finalName>alertbot</finalName>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <artifactSet>
-                        <excludes>
-                            <exclude>com.wire.cryptobox:cryptobox-jni:jar:${exclude}</exclude>
-                        </excludes>
-                    </artifactSet>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>

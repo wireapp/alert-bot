@@ -16,16 +16,17 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 package com.wire.bots.alert;
+
 import com.codahale.metrics.annotation.Timed;
-import com.wire.bots.sdk.ClientRepo;
-import com.wire.bots.alert.model.Alert;
 import com.wire.bots.alert.model.Config;
 import com.wire.bots.alert.model.Payload;
-import org.yaml.snakeyaml.Yaml;
+import com.wire.bots.sdk.user.UserClientRepo;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.UUID;
@@ -33,38 +34,17 @@ import java.util.UUID;
 @Path("/alert")
 @Consumes(MediaType.APPLICATION_JSON)
 public class BroadcastResource {
-    private final Config conf;
     private final Broadcaster exec;
-    private final static ThreadLocal<Yaml> yaml = new ThreadLocal<Yaml>() {
-        @Override
-        protected Yaml initialValue() {
-            return new Yaml();
-        }
-    };
 
-    BroadcastResource(ClientRepo repo, Config conf) {
-        this.conf = conf;
+    BroadcastResource(UserClientRepo repo, Config conf) {
         exec = new Broadcaster(repo, conf);
     }
 
     @POST
-    @Path("{apiKey}")
     @Timed
-    public Response broadcastAlert(@PathParam("apiKey") String apiKey,
-                                   @NotNull @Valid Payload payload) throws Exception {
-
-        if (!conf.getApiKeys().contains(apiKey))
-            throw new ForbiddenException();
-
-        for (Alert alert : payload.getAlerts()) {
-            String txt = String.format(
-                    "---\nStatus: %s\nAnnotations:\n%sLabels:\n%s\n",
-                    alert.getStatus(),
-                    yaml.get().dumpAsMap(alert.getAnnotations()),
-                    yaml.get().dumpAsMap(alert.getLabels())
-            );
-            exec.broadcastText(UUID.randomUUID().toString(), txt);
-        }
+    public Response broadcastAlert(@NotNull @Valid Payload payload) throws Exception {
+        String messageId = UUID.randomUUID().toString();
+        exec.broadcastText(messageId, payload.message);
 
         return Response.
                 accepted().

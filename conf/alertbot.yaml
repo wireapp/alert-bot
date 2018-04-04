@@ -4,7 +4,9 @@ server:
       port: 8080
 
   requestLog:
-  appenders: []
+    appenders: []
 
-cryptoDir: /var/lib/alertbot/crypto  # path to dir where to store crypto box files - directory must exists!
-apiKeys: []
+data: data
+auth: your_auth_token
+userId: "0936315c-8509-4024-b5b3-73ec14b52bb3"
+convId: "b6ff7920-64ce-40e5-8225-66237e3c679f"

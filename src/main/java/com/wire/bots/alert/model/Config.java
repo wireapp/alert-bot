@@ -18,12 +18,11 @@
 
 package com.wire.bots.alert.model;
 
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wire.bots.sdk.Configuration;
 
-public class Config extends com.wire.bots.sdk.Configuration {
-    private Set<String> apiKeys;
-
-    public Set<String> getApiKeys() {
-        return apiKeys;
-    }
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Config extends Configuration {
+    public String userId;
+    public String convId;
 }
