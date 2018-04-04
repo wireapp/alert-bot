@@ -1,6 +1,5 @@
 target/
-certs/
-crypto/
+data/
 .idea/
 *.iml
 *.log

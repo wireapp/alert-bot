@@ -1,8 +1,7 @@
-FROM eu.gcr.io/wire-bot/bots.runtime:latest
+FROM dejankovacevic/bots.runtime:2.10.0
 
 COPY target/alertbot.jar   /opt/alertbot/alertbot.jar
 COPY conf/alertbot.yaml    /etc/alertbot/alertbot.yaml
-COPY metrics.yaml          /opt/alertbot/metrics.yaml
 
 WORKDIR /opt/alertbot
 
