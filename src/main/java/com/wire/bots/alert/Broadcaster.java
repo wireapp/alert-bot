@@ -17,31 +17,37 @@
 package com.wire.bots.alert;
 
 import com.wire.bots.alert.model.Config;
+import com.wire.bots.cryptobox.CryptoException;
+import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.tools.Logger;
 import com.wire.bots.sdk.user.UserClientRepo;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 class Broadcaster {
-    private final UserClientRepo repo;
+    private final ClientRepo repo;
     private final Config config;
 
-    Broadcaster(UserClientRepo repo, Config config) {
+    Broadcaster(ClientRepo repo, Config config) {
         this.repo = repo;
         this.config = config;
     }
 
     void broadcastText(final String messageId, final String text) throws SQLException {
-        sendText(messageId, text, config.userId, config.convId);
+        String botId = config.userId;
+        try {
+            WireClient client = getWireClient(botId);
+            client.sendText(text);
+        } catch (Exception e) {
+            Logger.error("broadcastText: %s. Error: %s", botId, e);
+        }
     }
 
-    private void sendText(String messageId, String text, String botId, String conv) {
-        try {
-            WireClient client = repo.getWireClient(botId, conv);
-            client.sendText(text, 0, messageId);
-        } catch (Exception e) {
-            Logger.error("Bot: %s. Error: %s", botId, e.getMessage());
-        }
+    private WireClient getWireClient(String botId) throws CryptoException, IOException {
+        return repo instanceof UserClientRepo
+                ? ((UserClientRepo) repo).getWireClient(botId, config.convId)
+                : repo.getWireClient(botId);
     }
 }
