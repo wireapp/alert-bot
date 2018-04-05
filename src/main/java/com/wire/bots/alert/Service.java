@@ -17,10 +17,9 @@
 
 package com.wire.bots.alert;
 
+import com.wire.bots.alert.model.Config;
 import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.Server;
-import com.wire.bots.alert.model.Config;
-import com.wire.bots.sdk.user.UserClientRepo;
 import io.dropwizard.setup.Environment;
 
 public class Service extends Server<Config> {
@@ -36,6 +35,6 @@ public class Service extends Server<Config> {
 
     @Override
     protected void onRun(Config config, Environment env) {
-        addResource(new BroadcastResource((UserClientRepo) repo, config), env);
+        addResource(new BroadcastResource(repo, config), env);
     }
 }

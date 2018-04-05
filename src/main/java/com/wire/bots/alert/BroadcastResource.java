@@ -20,7 +20,7 @@ package com.wire.bots.alert;
 import com.codahale.metrics.annotation.Timed;
 import com.wire.bots.alert.model.Config;
 import com.wire.bots.alert.model.Payload;
-import com.wire.bots.sdk.user.UserClientRepo;
+import com.wire.bots.sdk.ClientRepo;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -29,22 +29,20 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.UUID;
 
 @Path("/alert")
 @Consumes(MediaType.APPLICATION_JSON)
 public class BroadcastResource {
     private final Broadcaster exec;
 
-    BroadcastResource(UserClientRepo repo, Config conf) {
+    BroadcastResource(ClientRepo repo, Config conf) {
         exec = new Broadcaster(repo, conf);
     }
 
     @POST
     @Timed
     public Response broadcastAlert(@NotNull @Valid Payload payload) throws Exception {
-        String messageId = UUID.randomUUID().toString();
-        exec.broadcastText(messageId, payload.message);
+        exec.broadcastText(payload.message);
 
         return Response.
                 accepted().

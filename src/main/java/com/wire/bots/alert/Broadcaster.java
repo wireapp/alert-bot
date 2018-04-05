@@ -35,7 +35,7 @@ class Broadcaster {
         this.config = config;
     }
 
-    void broadcastText(final String messageId, final String text) throws SQLException {
+    void broadcastText(final String text) throws SQLException {
         String botId = config.userId;
         try {
             WireClient client = getWireClient(botId);
