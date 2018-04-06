@@ -25,4 +25,5 @@ import com.wire.bots.sdk.Configuration;
 public class Config extends Configuration {
     public String userId;
     public String convId;
+    public String whitelist;
 }
