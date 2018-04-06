@@ -25,7 +25,8 @@ public class MessageHandler extends MessageHandlerBase {
     }
 
     private boolean isWhitelisted(String handle, String whitelist) {
-        for (String white : whitelist.split(",")) {
+        String replace = whitelist.replace("@", "");
+        for (String white : replace.split(",")) {
             if (white.trim().equalsIgnoreCase(handle)) {
                 return true;
             }
