@@ -21,6 +21,7 @@ import com.github.mtakaki.dropwizard.admin.AdminResourceBundle;
 import com.wire.bots.alert.model.Config;
 import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.Server;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 public class Service extends Server<Config> {
@@ -28,6 +29,11 @@ public class Service extends Server<Config> {
 
     public static void main(String[] args) throws Exception {
         new Service().run(args);
+    }
+
+    @Override
+    public void initialize(Bootstrap<Config> bootstrap) {
+        bootstrap.addBundle(admin);
     }
 
     @Override
