@@ -23,6 +23,7 @@ import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.tools.Logger;
 import com.wire.bots.sdk.user.UserClientRepo;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -36,12 +37,14 @@ class Broadcaster {
     }
 
     void broadcastText(final String text) throws SQLException {
-        String botId = config.userId;
-        try {
-            WireClient client = getWireClient(botId);
-            client.sendText(text);
-        } catch (Exception e) {
-            Logger.error("broadcastText: %s. Error: %s", botId, e);
+        for (File f : getBots()) {
+            String botId = f.getName();
+            try {
+                WireClient client = getWireClient(botId);
+                client.sendText(text);
+            } catch (Exception e) {
+                Logger.error("broadcastText: %s Error: %s", botId, e);
+            }
         }
     }
 
@@ -49,5 +52,10 @@ class Broadcaster {
         return repo instanceof UserClientRepo
                 ? ((UserClientRepo) repo).getWireClient(botId, config.convId)
                 : repo.getWireClient(botId);
+    }
+
+    private File[] getBots() {
+        File dir = new File(config.getData());
+        return dir.listFiles(File::isDirectory);
     }
 }
