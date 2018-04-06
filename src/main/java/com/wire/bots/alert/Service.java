@@ -45,7 +45,8 @@ public class Service extends Server<Config> {
     @Override
     protected void onRun(Config config, Environment env) {
         BroadcastResource resource = new BroadcastResource(repo, config);
-        admin.getJerseyEnvironment()
-                .register(resource);
+//        admin.getJerseyEnvironment()
+//                .register(resource);
+        addResource(resource, env);
     }
 }
