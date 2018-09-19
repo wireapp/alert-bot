@@ -1,7 +1,7 @@
 FROM dejankovacevic/bots.runtime:2.10.0
 
-COPY target/alertbot.jar   /opt/alertbot/alertbot.jar
-COPY conf/alertbot.yaml    /etc/alertbot/alertbot.yaml
+COPY target/alertbot.jar   /opt/alert/alertbot.jar
+COPY alertbot.yaml         /etc/alert/alertbot.yaml
 
-WORKDIR /opt/alertbot
+WORKDIR /opt/alert
 

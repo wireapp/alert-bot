@@ -1,0 +1,11 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8080
+
+  requestLog:
+    appenders: []
+
+auth: your_auth_token
+
+whitelist:

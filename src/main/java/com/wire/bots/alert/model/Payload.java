@@ -28,5 +28,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class Payload {
     @JsonProperty
     public String message;
+
+    @JsonProperty
+    public String environment;
+
+    @JsonProperty
+    public String service;
 }
 

@@ -1,0 +1,4 @@
+CREATE TABLE Alert (
+ botId UUID NOT NULL PRIMARY KEY,
+ conversationId UUID NOT NULL
+);

@@ -16,29 +16,24 @@
 //
 package com.wire.bots.alert;
 
-import com.wire.bots.alert.model.Config;
-import com.wire.bots.cryptobox.CryptoException;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.tools.Logger;
 import com.wire.bots.sdk.user.UserClientRepo;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 
 class Broadcaster {
     private final ClientRepo repo;
-    private final Config config;
+    private final Database db;
 
-    Broadcaster(ClientRepo repo, Config config) {
+    Broadcaster(ClientRepo repo) {
         this.repo = repo;
-        this.config = config;
+        this.db = new Database(Service.config.postgres);
     }
 
-    void broadcastText(final String text) throws SQLException {
-        for (File f : getBots()) {
-            String botId = f.getName();
+    void broadcastText(final String text) throws Exception {
+        for (String botId : getBots()) {
             try {
                 WireClient client = getWireClient(botId);
                 client.sendText(text);
@@ -48,14 +43,13 @@ class Broadcaster {
         }
     }
 
-    private WireClient getWireClient(String botId) throws CryptoException, IOException {
+    private WireClient getWireClient(String botId) throws Exception {
         return repo instanceof UserClientRepo
-                ? ((UserClientRepo) repo).getWireClient(botId, config.convId)
+                ? ((UserClientRepo) repo).getWireClient(botId, db.getConversationId(botId))
                 : repo.getWireClient(botId);
     }
 
-    private File[] getBots() {
-        File dir = new File(config.getData());
-        return dir.listFiles(File::isDirectory);
+    private ArrayList<String> getBots() throws Exception {
+        return db.getSubscribers();
     }
 }

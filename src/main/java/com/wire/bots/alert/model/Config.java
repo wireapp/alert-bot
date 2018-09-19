@@ -19,11 +19,33 @@
 package com.wire.bots.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wire.bots.sdk.Configuration;
+
+import javax.validation.constraints.NotNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Config extends Configuration {
-    public String userId;
-    public String convId;
+    @JsonProperty
     public String whitelist;
+
+    @JsonProperty
+    @NotNull
+    public String secret;
+
+    @JsonProperty
+    @NotNull
+    public DB postgres = new DB();
+
+    public DB getPostgres() {
+        return postgres;
+    }
+
+    public String getWhitelist() {
+        return whitelist;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
 }

@@ -18,30 +18,37 @@
 package com.wire.bots.alert;
 
 import com.codahale.metrics.annotation.Timed;
-import com.wire.bots.alert.model.Config;
 import com.wire.bots.alert.model.Payload;
 import com.wire.bots.sdk.ClientRepo;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Objects;
 
-@Path("/alert")
+@Path("/broadcast")
 @Consumes(MediaType.APPLICATION_JSON)
 public class BroadcastResource {
     private final Broadcaster exec;
 
-    BroadcastResource(ClientRepo repo, Config conf) {
-        exec = new Broadcaster(repo, conf);
+    BroadcastResource(ClientRepo repo) {
+        exec = new Broadcaster(repo);
     }
 
     @POST
     @Timed
-    public Response broadcastAlert(@NotNull @Valid Payload payload) throws Exception {
+    public Response broadcastAlert(@NotNull @Valid @HeaderParam("secret") String secret,
+                                   @NotNull @Valid Payload payload) throws Exception {
+        if (!Objects.equals(secret, Service.config.getSecret()))
+            return Response.
+                    status(403).
+                    build();
+
         exec.broadcastText(payload.message);
 
         return Response.
