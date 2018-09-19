@@ -2,7 +2,10 @@
 This is alert bot for Wire.
 
 ## How to send alerts
-curl -i -XPOST http://localhost:8081/admin/alert -d '{ "message" : "Hi There!" }' -H'content-type:application/json'
+```
+curl 'http://localhost:8080/alert/broadcast -H'secret:$SECRET' -H'content-type:application/json'-d \
+    '{ "message" : "Hi There!", "environment":"prod", "service":"ibis" }'
+```
 
 ## White list users that can receive alerts
 comma separated list of Wire `usernames` in `whitelist` in the `config`.
