@@ -17,10 +17,10 @@
 
 package com.wire.bots.alert.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 /**
@@ -29,30 +29,23 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class Alert {
-    private final String status;
-    private final Map<String, String> labels;
-    private final Map<String, String> annotations;
-
-    @JsonCreator
-    public Alert(@JsonProperty("status") String status,
-                 @JsonProperty("labels") Map<String, String> labels,
-                 @JsonProperty("annotations") Map<String, String> annotations) {
-        this.status = status;
-        this.labels = labels;
-        this.annotations = annotations;
-    }
-
     @JsonProperty
+    @NotNull
+    public String status;
+    @JsonProperty
+    public Map<String, String> labels;
+    @JsonProperty
+    @NotNull
+    public Map<String, String> annotations;
+
     public String getStatus() {
         return status;
     }
 
-    @JsonProperty
     public Map<String, String> getLabels() {
         return labels;
     }
 
-    @JsonProperty
     public Map<String, String> getAnnotations() {
         return annotations;
     }

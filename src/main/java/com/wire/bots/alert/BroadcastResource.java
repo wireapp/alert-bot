@@ -18,7 +18,7 @@
 package com.wire.bots.alert;
 
 import com.codahale.metrics.annotation.Timed;
-import com.wire.bots.alert.model.Payload;
+import com.wire.bots.alert.model.Alert;
 import com.wire.bots.sdk.ClientRepo;
 
 import javax.validation.Valid;
@@ -43,13 +43,13 @@ public class BroadcastResource {
     @POST
     @Timed
     public Response broadcastAlert(@NotNull @Valid @HeaderParam("secret") String secret,
-                                   @NotNull @Valid Payload payload) throws Exception {
+                                   @NotNull @Valid Alert payload) throws Exception {
         if (!Objects.equals(secret, Service.config.getSecret()))
             return Response.
                     status(403).
                     build();
 
-        exec.broadcastText(payload.message);
+        exec.broadcast(payload);
 
         return Response.
                 accepted().
