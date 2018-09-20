@@ -20,7 +20,7 @@ package com.wire.bots.alert;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.wire.bots.alert.model.Alert;
+import com.wire.bots.alert.model.Prometheus;
 import com.wire.bots.sdk.ClientRepo;
 
 import javax.validation.Valid;
@@ -48,15 +48,16 @@ public class PrometheusResource {
     @POST
     @Timed
     public Response webhook(@NotNull @Valid @HeaderParam("bearer_token") String secret,
-                            @NotNull @Valid Alert payload) throws Exception {
+                            @NotNull @Valid Prometheus payload) throws Exception {
         if (!Objects.equals(secret, Service.config.getSecret()))
             return Response.
                     status(403).
                     build();
 
-        String text = mapper.writeValueAsString(payload);
-
-        broadcaster.broadcast(text, payload.getAnnotations());
+        for (Prometheus.Alert alert : payload.alerts) {
+            String text = mapper.writeValueAsString(alert);
+            broadcaster.broadcast(text, alert.annotations);
+        }
 
         return Response.
                 accepted().
