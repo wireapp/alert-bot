@@ -47,7 +47,7 @@ public class Service extends Server<Config> {
 
     @Override
     protected void onRun(Config config, Environment env) {
-        addResource(new BroadcastResource(repo), env);
+        addResource(new PrometheusResource(repo), env);
     }
 
     /**

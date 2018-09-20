@@ -18,6 +18,8 @@
 package com.wire.bots.alert;
 
 import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wire.bots.alert.model.Alert;
 import com.wire.bots.sdk.ClientRepo;
 
@@ -31,25 +33,30 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Objects;
 
-@Path("/broadcast")
+@Path("/prometheus")
 @Consumes(MediaType.APPLICATION_JSON)
-public class BroadcastResource {
-    private final Broadcaster exec;
+public class PrometheusResource {
+    private final Broadcaster broadcaster;
+    private final ObjectMapper mapper;
 
-    BroadcastResource(ClientRepo repo) {
-        exec = new Broadcaster(repo);
+    PrometheusResource(ClientRepo repo) {
+        broadcaster = new Broadcaster(repo);
+        mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     @POST
     @Timed
-    public Response broadcastAlert(@NotNull @Valid @HeaderParam("secret") String secret,
-                                   @NotNull @Valid Alert payload) throws Exception {
+    public Response webhook(@NotNull @Valid @HeaderParam("bearer_token") String secret,
+                            @NotNull @Valid Alert payload) throws Exception {
         if (!Objects.equals(secret, Service.config.getSecret()))
             return Response.
                     status(403).
                     build();
 
-        exec.broadcast(payload);
+        String text = mapper.writeValueAsString(payload);
+
+        broadcaster.broadcast(text, payload.getAnnotations());
 
         return Response.
                 accepted().

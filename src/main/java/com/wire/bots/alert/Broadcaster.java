@@ -16,9 +16,6 @@
 //
 package com.wire.bots.alert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.wire.bots.alert.model.Alert;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.tools.Logger;
@@ -47,13 +44,11 @@ class Broadcaster {
         return db.getSubscribers();
     }
 
-    void broadcast(Alert payload) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        String text = mapper.writeValueAsString(payload);
+    void broadcast(String text, Map<String, String> annotations) throws Exception {
+
         for (String botId : getBots()) {
             try {
-                boolean ret = filter(payload.getAnnotations(), db.getAnnotations(botId));
+                boolean ret = filter(annotations, db.getAnnotations(botId));
                 if (ret) {
                     WireClient client = getWireClient(botId);
                     client.sendText(String.format("```\n%s\n```", text));
