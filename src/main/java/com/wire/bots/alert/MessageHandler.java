@@ -29,9 +29,8 @@ public class MessageHandler extends MessageHandlerBase {
     @Override
     public void onNewConversation(WireClient client) {
         try {
-            boolean insertSubscriber = db.insertSubscriber(client.getId(), client.getConversationId());
-            if (insertSubscriber)
-                client.sendText("Hey");
+            if (db.insertSubscriber(client.getId(), client.getConversationId()))
+                Logger.info("onNewConversation. New subscriber, %s", client.getId());
         } catch (Exception e) {
             e.printStackTrace();
             Logger.error(e.getMessage());
@@ -51,6 +50,7 @@ public class MessageHandler extends MessageHandlerBase {
     @Override
     public void onText(WireClient client, TextMessage msg) {
         try {
+            String botId = client.getId();
             String[] split = msg.getText().toLowerCase().trim().split(" ");
             if (split.length < 4)
                 return;
@@ -64,12 +64,12 @@ public class MessageHandler extends MessageHandlerBase {
                 return;
             }
 
-            if (subCommand.equals("add") && db.insertAnnotation(client.getId(), key, value)) {
+            if (subCommand.equals("add") && db.insertAnnotation(botId, key, value)) {
                 String text = String.format("Ok, filtering for `%s=%s`", key, value);
                 client.sendText(text);
             }
 
-            if (subCommand.equals("remove") && db.removeAnnotation(client.getId(), key, value)) {
+            if (subCommand.equals("remove") && db.removeAnnotation(botId, key, value)) {
                 String text = String.format("Ok, removed filtering for `%s=%s`", key, value);
                 client.sendText(text);
             }

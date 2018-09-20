@@ -8,4 +8,18 @@ server:
 
 auth: your_auth_token
 
+postgres:
+  host: localhost
+  port: 5432
+  database: postgres
+  driver: postgresql
+  user: postgres
+  password: ${DW_POSTGRES_PASSWORD}
+
+db:
+    host: localhost
+    port: 6379 #redis
+
+secret: ${DW_ALERT_SECRET}
+
 whitelist:
