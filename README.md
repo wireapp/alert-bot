@@ -3,7 +3,7 @@ This is alert bot for Wire.
 
 ## How to send alerts
 ```
-curl 'localhost:8080/alert/prometheus' -H "bearer_token:$SECRET" -H'content-type:application/json' -d @examples/prometheus.json
+curl 'localhost:8080/alert/prometheus' -H "Authorization:Bearer $TOKEN" -H'content-type:application/json' -d @examples/prometheus.json
 ```
 
 ## How to filter out alerts

@@ -47,11 +47,11 @@ public class PrometheusResource {
 
     @POST
     @Timed
-    public Response webhook(@NotNull @Valid @HeaderParam("bearer_token") String secret,
+    public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
                             @NotNull @Valid Prometheus payload) throws Exception {
-        if (!Objects.equals(secret, Service.config.getSecret()))
+        if (!Objects.equals(token, String.format("Bearer %s", Service.config.getSecret())))
             return Response.
-                    status(403).
+                    status(401).
                     build();
 
         for (Prometheus.Alert alert : payload.alerts) {
