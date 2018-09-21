@@ -44,11 +44,11 @@ class Broadcaster {
         return db.getSubscribers();
     }
 
-    void broadcast(String text, Map<String, String> annotations) throws Exception {
+    void broadcast(String text, Map<String, String> labels) throws Exception {
 
         for (String botId : getBots()) {
             try {
-                boolean ret = filter(annotations, db.getAnnotations(botId));
+                boolean ret = filter(labels, db.getAnnotations(botId));
                 if (ret) {
                     WireClient client = getWireClient(botId);
                     client.sendText(String.format("```\n%s\n```", text));
@@ -59,20 +59,17 @@ class Broadcaster {
         }
     }
 
-    private boolean filter(Map<String, String> payloadAnnotations, Map<String, String> annotations) {
-        if (payloadAnnotations == null)
-            return !annotations.isEmpty();
-
-        for (String key : payloadAnnotations.keySet()) {
-            String value = annotations.get(key);
-            if (value != null && !Objects.equals(value, payloadAnnotations.get(key))) {
+    private boolean filter(Map<String, String> first, Map<String, String> second) {
+        for (String key : first.keySet()) {
+            String value = second.get(key);
+            if (value != null && !Objects.equals(value, first.get(key))) {
                 return false;
             }
         }
 
-        for (String key : annotations.keySet()) {
-            String value = payloadAnnotations.get(key);
-            if (value != null && !Objects.equals(value, annotations.get(key))) {
+        for (String key : second.keySet()) {
+            String value = first.get(key);
+            if (value != null && !Objects.equals(value, second.get(key))) {
                 return false;
             }
         }

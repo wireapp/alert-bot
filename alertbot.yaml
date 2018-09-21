@@ -6,20 +6,22 @@ server:
   requestLog:
     appenders: []
 
-auth: your_auth_token
+auth: ${ALERT_SERVICE_TOKEN}
 
 postgres:
   host: localhost
   port: 5432
   database: postgres
   driver: postgresql
-  user: postgres
-  password: ${DW_POSTGRES_PASSWORD}
+  user: admin
+  password: ${POSTGRES_PASSWORD}
 
 db:
     host: localhost
     port: 6379 #redis
+    user: admin
+    password: ${REDIS_PASSWORD}
 
-secret: ${DW_ALERT_SECRET}
+secret: ${ALERT_PROMETHEUS_TOKEN}
 
 whitelist:

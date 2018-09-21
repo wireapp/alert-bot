@@ -1,18 +1,32 @@
 # Alert-bot
 This is alert bot for Wire.
 
-## How to send alerts
+## Prometheus config
 ```
-curl 'localhost:8080/alert/prometheus' -H "Authorization:Bearer $TOKEN" -H'content-type:application/json' -d @examples/prometheus.json
+...
+
+receivers:
+  - name: 'alertbot'
+    webhook_configs:
+    - url: https://services.wire.com/alert/prometheus
+      send_resolved: false
+      http_config: your.http_config
+      
+...
+
+```
+## How to send Prometheus alerts manually
+```
+curl 'localhost:8080/alert/prometheus' -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" -H'content-type:application/json' -d @examples/prometheus.json
 ```
 
 ## How to filter out alerts
 ```
-/annotation add service ibis
+/label add service ibis
 ```
-This will make that only warnings that contain _annotation_ `service=ibis` would be displayed
+This will make that only warnings that contain _label_ `service=ibis` would be displayed
 ```
-/annotation remove service ibis
+/label remove service ibis
 ```
 
 ## White list users that can receive alerts

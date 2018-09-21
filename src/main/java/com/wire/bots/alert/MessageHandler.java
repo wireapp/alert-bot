@@ -60,7 +60,7 @@ public class MessageHandler extends MessageHandlerBase {
             String key = split[2];
             String value = split[3];
 
-            if (!command.equals("/annotation")) {
+            if (!command.equals("/label")) {
                 return;
             }
 

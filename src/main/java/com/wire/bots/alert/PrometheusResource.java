@@ -56,7 +56,7 @@ public class PrometheusResource {
 
         for (Prometheus.Alert alert : payload.alerts) {
             String text = mapper.writeValueAsString(alert);
-            broadcaster.broadcast(text, alert.annotations);
+            broadcaster.broadcast(text, alert.labels);
         }
 
         return Response.
