@@ -1,4 +1,6 @@
 # Alert-bot
+[![Build Status](https://travis-ci.org/wireapp/alert-bot.svg?branch=master)](https://travis-ci.org/wireapp/alert-bot)
+
 This is alert bot for Wire.
 
 ## Prometheus config
@@ -17,7 +19,10 @@ receivers:
 ```
 ## How to send Prometheus alerts manually
 ```
-curl 'localhost:8080/alert/prometheus' -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" -H'content-type:application/json' -d @examples/prometheus.json
+curl 'localhost:8080/alert/prometheus' \
+    -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
+    -H "Content-Type:Application/Json" \
+    -d @examples/prometheus.json
 ```
 
 ## How to filter out alerts

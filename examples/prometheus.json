@@ -5,7 +5,7 @@
     {
       "status": "firing",
       "labels": {
-        "alertname": "something_happend",
+        "alertname": "something_happened",
         "env": "prod",
         "instance": "server01.int:9100",
         "job": "node",
@@ -22,11 +22,11 @@
     }
   ],
   "groupLabels": {
-    "alertname": "something_happend",
+    "alertname": "something_happened",
     "instance": "server01.int:9100"
   },
   "commonLabels": {
-    "alertname": "something_happend",
+    "alertname": "something_happened",
     "env": "prod",
     "instance": "server01.int:9100",
     "job": "node",
