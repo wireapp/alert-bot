@@ -18,6 +18,7 @@
 package com.wire.bots.alert;
 
 import com.wire.bots.alert.model.Config;
+import com.wire.bots.alert.resources.PrometheusResource;
 import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.Server;
 import com.wire.bots.sdk.crypto.CryptoDatabase;
@@ -28,7 +29,7 @@ import com.wire.bots.sdk.state.RedisState;
 import io.dropwizard.setup.Environment;
 
 public class Service extends Server<Config> {
-    static Config config;
+    public static Config config;
 
     public static void main(String[] args) throws Exception {
         new Service().run(args);

@@ -15,13 +15,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
-package com.wire.bots.alert;
+package com.wire.bots.alert.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.wire.bots.alert.Broadcaster;
+import com.wire.bots.alert.Service;
 import com.wire.bots.alert.model.Prometheus;
 import com.wire.bots.sdk.ClientRepo;
+import com.wire.bots.sdk.tools.Logger;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -39,7 +42,7 @@ public class PrometheusResource {
     private final Broadcaster broadcaster;
     private final ObjectMapper mapper;
 
-    PrometheusResource(ClientRepo repo) {
+    public PrometheusResource(ClientRepo repo) {
         broadcaster = new Broadcaster(repo);
         mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -49,7 +52,10 @@ public class PrometheusResource {
     @Timed
     public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
                             @NotNull @Valid Prometheus payload) throws Exception {
-        if (!Objects.equals(token, String.format("Bearer %s", Service.config.getSecret())))
+
+        Logger.info("New payload: %s", payload.externalURL);
+
+        if (!Objects.equals(token, String.format("Bearer %s", Service.config.getPrometheusToken())))
             return Response.
                     status(401).
                     build();

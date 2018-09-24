@@ -3,7 +3,7 @@
 
 This is alert bot for Wire.
 
-## Prometheus config
+## Alert manager config
 ```
 ...
 
@@ -12,7 +12,8 @@ receivers:
     webhook_configs:
     - url: https://services.wire.com/alert/prometheus
       send_resolved: false
-      http_config: your.http_config
+      http_config:
+        bearer_token: '$ALERT_PROMETHEUS_TOKEN'
       
 ...
 

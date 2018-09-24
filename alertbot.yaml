@@ -17,11 +17,11 @@ postgres:
   password: ${POSTGRES_PASSWORD}
 
 db:
-    host: localhost
-    port: 6379 #redis
-    user: admin
-    password: ${REDIS_PASSWORD}
+  host: localhost
+  port: 6379 #redis
+  user: admin
+  password: ${REDIS_PASSWORD}
 
-secret: ${ALERT_PROMETHEUS_TOKEN}
+prometheusToken: ${ALERT_PROMETHEUS_TOKEN}
 
 whitelist:

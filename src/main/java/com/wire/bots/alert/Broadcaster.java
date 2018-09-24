@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
-class Broadcaster {
+public class Broadcaster {
     private final ClientRepo repo;
     private final Database db;
 
-    Broadcaster(ClientRepo repo) {
+    public Broadcaster(ClientRepo repo) {
         this.repo = repo;
         this.db = new Database(Service.config.postgres);
     }
@@ -44,7 +44,7 @@ class Broadcaster {
         return db.getSubscribers();
     }
 
-    void broadcast(String text, Map<String, String> labels) throws Exception {
+    public void broadcast(String text, Map<String, String> labels) throws Exception {
 
         for (String botId : getBots()) {
             try {

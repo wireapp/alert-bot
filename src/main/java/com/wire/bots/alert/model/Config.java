@@ -31,7 +31,7 @@ public class Config extends Configuration {
 
     @JsonProperty
     @NotNull
-    public String secret;
+    public String prometheusToken;
 
     @JsonProperty
     @NotNull
@@ -45,7 +45,7 @@ public class Config extends Configuration {
         return whitelist;
     }
 
-    public String getSecret() {
-        return secret;
+    public String getPrometheusToken() {
+        return prometheusToken;
     }
 }
