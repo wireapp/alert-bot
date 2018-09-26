@@ -20,6 +20,9 @@ package com.wire.bots.alert.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheFactory;
 import com.wire.bots.alert.Broadcaster;
 import com.wire.bots.alert.Service;
 import com.wire.bots.alert.model.Prometheus;
@@ -34,11 +37,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Objects;
 
 @Path("/prometheus")
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrometheusResource {
+    private final static MustacheFactory mf = new DefaultMustacheFactory();
     private final Broadcaster broadcaster;
     private final ObjectMapper mapper;
 
@@ -48,6 +55,13 @@ public class PrometheusResource {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
+    private static String execute(Mustache mustache, Object model) throws IOException {
+        try (StringWriter sw = new StringWriter()) {
+            mustache.execute(new PrintWriter(sw), model).flush();
+            return sw.toString();
+        }
+    }
+
     @POST
     @Timed
     public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
@@ -55,19 +69,26 @@ public class PrometheusResource {
 
         Logger.info("New payload: %s", payload.externalURL);
 
-        if (!Objects.equals(token, String.format("Bearer %s", Service.config.getPrometheusToken())))
+        String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
+        if (!Objects.equals(token, challenge)) {
+            Logger.warning("Wrong Authorization: %s", token);
             return Response.
                     status(401).
                     build();
-
-        for (Prometheus.Alert alert : payload.alerts) {
-            String text = mapper.writeValueAsString(alert);
-            broadcaster.broadcast(text, alert.labels);
         }
+
+        Mustache template = getTemplate("prometheus.mustache");
+        String text = execute(template, payload);
+        broadcaster.broadcast(text, payload.commonLabels);
 
         return Response.
                 accepted().
                 build();
+    }
+
+    private Mustache getTemplate(String template) {
+        String path = String.format("templates/%s", template);
+        return mf.compile(path);
     }
 }
 

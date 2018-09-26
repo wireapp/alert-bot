@@ -51,7 +51,7 @@ public class Broadcaster {
                 boolean ret = filter(labels, db.getAnnotations(botId));
                 if (ret) {
                     WireClient client = getWireClient(botId);
-                    client.sendText(String.format("```\n%s\n```", text));
+                    client.sendText(text);
                 }
             } catch (Exception e) {
                 Logger.error("broadcastText: %s Error: %s", botId, e);

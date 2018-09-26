@@ -8,6 +8,7 @@ import com.wire.bots.sdk.server.model.NewBot;
 import com.wire.bots.sdk.tools.Logger;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public class MessageHandler extends MessageHandlerBase {
     private final Config config;
@@ -52,26 +53,33 @@ public class MessageHandler extends MessageHandlerBase {
         try {
             String botId = client.getId();
             String[] split = msg.getText().toLowerCase().trim().split(" ");
-            if (split.length < 4)
-                return;
-
             String command = split[0];
-            String subCommand = split[1];
-            String key = split[2];
-            String value = split[3];
 
-            if (!command.equals("/label")) {
-                return;
+            if (command.equals("/label") && split.length == 4) {
+                String subCommand = split[1];
+                String key = split[2];
+                String value = split[3];
+
+                if (subCommand.equals("add") && db.insertAnnotation(botId, key, value)) {
+                    String text = String.format("Ok, filtering for `%s=%s`", key, value);
+                    client.sendText(text);
+                }
+
+                if (subCommand.equals("remove") && db.removeAnnotation(botId, key, value)) {
+                    String text = String.format("Ok, removed filtering for `%s=%s`", key, value);
+                    client.sendText(text);
+                }
             }
 
-            if (subCommand.equals("add") && db.insertAnnotation(botId, key, value)) {
-                String text = String.format("Ok, filtering for `%s=%s`", key, value);
-                client.sendText(text);
-            }
-
-            if (subCommand.equals("remove") && db.removeAnnotation(botId, key, value)) {
-                String text = String.format("Ok, removed filtering for `%s=%s`", key, value);
-                client.sendText(text);
+            if (command.equals("/labels")) {
+                Map<String, String> annotations = db.getAnnotations(botId);
+                StringBuilder sb = new StringBuilder();
+                if (annotations.isEmpty())
+                    sb.append("No labels");
+                for (String k : annotations.keySet()) {
+                    sb.append(k).append("=").append(annotations.get(k)).append("\n");
+                }
+                client.sendText("```\n" + sb.toString() + "```");
             }
         } catch (Exception e) {
             e.printStackTrace();
