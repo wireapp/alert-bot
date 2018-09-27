@@ -17,8 +17,7 @@ class Database {
 
     boolean insertSubscriber(String botId, String convId) throws Exception {
         try (Connection c = newConnection()) {
-            PreparedStatement stmt = c.prepareStatement("INSERT INTO Alert (botId, conversationId) VALUES (?, ?) " +
-                    "ON CONFLICT (botId) DO NOTHING");
+            PreparedStatement stmt = c.prepareStatement("INSERT INTO Alert (botId, conversationId) VALUES (?, ?)");
             stmt.setObject(1, UUID.fromString(botId));
             stmt.setObject(2, UUID.fromString(convId));
             return stmt.executeUpdate() == 1;
@@ -59,8 +58,7 @@ class Database {
 
     boolean insertAnnotation(String botId, String key, String value) throws SQLException {
         try (Connection c = newConnection()) {
-            PreparedStatement stmt = c.prepareStatement("INSERT INTO Annotations (botId, key, value) VALUES (?, ?, ?) " +
-                    "ON CONFLICT (botId, key, value) DO NOTHING");
+            PreparedStatement stmt = c.prepareStatement("INSERT INTO Annotations (botId, key, value) VALUES (?, ?, ?)");
             stmt.setObject(1, UUID.fromString(botId));
             stmt.setString(2, key);
             stmt.setString(3, value);
@@ -84,7 +82,7 @@ class Database {
     }
 
     private Connection newConnection() throws SQLException {
-        String url = String.format("jdbc:postgresql://%s:%d/%s", conf.host, conf.port, conf.database);
+        String url = String.format("jdbc:%s://%s:%d/%s", conf.driver, conf.host, conf.port, conf.database);
         return DriverManager.getConnection(url, conf.user, conf.password);
     }
 
