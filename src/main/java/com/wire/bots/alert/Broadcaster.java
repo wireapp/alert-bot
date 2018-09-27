@@ -44,19 +44,21 @@ public class Broadcaster {
         return db.getSubscribers();
     }
 
-    public void broadcast(String text, Map<String, String> labels) throws Exception {
-
+    public int broadcast(String text, Map<String, String> labels) throws Exception {
+        int count = 0;
         for (String botId : getBots()) {
             try {
                 boolean ret = filter(labels, db.getAnnotations(botId));
                 if (ret) {
                     WireClient client = getWireClient(botId);
                     client.sendText(text);
+                    count++;
                 }
             } catch (Exception e) {
                 Logger.error("broadcastText: %s Error: %s", botId, e);
             }
         }
+        return count;
     }
 
     private boolean filter(Map<String, String> first, Map<String, String> second) {

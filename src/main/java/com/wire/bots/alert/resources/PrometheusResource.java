@@ -18,8 +18,6 @@
 package com.wire.bots.alert.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
@@ -47,12 +45,9 @@ import java.util.Objects;
 public class PrometheusResource {
     private final static MustacheFactory mf = new DefaultMustacheFactory();
     private final Broadcaster broadcaster;
-    private final ObjectMapper mapper;
 
     public PrometheusResource(ClientRepo repo) {
         broadcaster = new Broadcaster(repo);
-        mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     private static String execute(Mustache mustache, Object model) throws IOException {
@@ -67,11 +62,9 @@ public class PrometheusResource {
     public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
                             @NotNull @Valid Prometheus payload) throws Exception {
 
-        Logger.info("New payload: %s", payload.externalURL);
-
         String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
         if (!Objects.equals(token, challenge)) {
-            Logger.warning("Wrong Authorization: %s", token);
+            Logger.warning("Wrong Authorization: %s from %s", token, payload.externalURL);
             return Response.
                     status(401).
                     build();
@@ -79,7 +72,9 @@ public class PrometheusResource {
 
         Mustache template = getTemplate("prometheus.mustache");
         String text = execute(template, payload);
-        broadcaster.broadcast(text, payload.commonLabels);
+        int broadcast = broadcaster.broadcast(text, payload.commonLabels);
+
+        Logger.info("PrometheusResource: New payload from %s broadcast in %d convs", payload.externalURL, broadcast);
 
         return Response.
                 accepted().

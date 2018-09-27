@@ -82,7 +82,7 @@ public class MessageHandler extends MessageHandlerBase {
                 client.sendText("```\n" + sb.toString() + "```");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.warning("OnText: %s ex: %s", msg.getText(), e);
         }
     }
 

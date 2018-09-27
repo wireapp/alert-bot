@@ -11,10 +11,11 @@ receivers:
   - name: 'alertbot'
     webhook_configs:
     - url: https://services.wire.com/alert/prometheus
-      send_resolved: false
+      send_resolved: true
       http_config:
-        bearer_token: '$ALERT_PROMETHEUS_TOKEN'
-      
+          bearer_token: '$ALERT_PROMETHEUS_TOKEN'
+          tls_config:
+            insecure_skip_verify: true
 ...
 
 ```
@@ -31,10 +32,11 @@ curl 'localhost:8080/alert/prometheus' \
 /label add service ibis
 ```
 This will make that only warnings that contain _label_ `service=ibis` would be displayed
+</b>
 ```
 /label remove service ibis
 ```
 
-## White list users that can receive alerts
-comma separated list of Wire `usernames` in `whitelist` in the `config`.
+## Whitelist users that can receive alerts
+comma separated list of Wire `username` in `whitelist` in the `config`.
 Leave the list empty if you want to allow everybody to join.            
