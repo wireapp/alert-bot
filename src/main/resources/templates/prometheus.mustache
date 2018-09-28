@@ -1,12 +1,10 @@
 {{#alerts}}
-**{{status}}**
+{{commonLabels.icon}} **{{status}}**
 {{#labels}}
-{{alertname}} **{{severity}}**
+{{alertname}} **{{severity}}** {{icon}}
 {{role}} @ {{instance}} on {{env}}
 {{/labels}}
-{{#annotations}}
-{{summary}}
-{{/annotations}}
+{{annotations.summary}}
 [link]({{{generatorURL}}})
 __
 {{/alerts}}

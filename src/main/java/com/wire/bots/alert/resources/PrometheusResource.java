@@ -70,6 +70,11 @@ public class PrometheusResource {
                     build();
         }
 
+        if (payload.status.equals("firing"))
+            payload.commonLabels.put("icon", "\uD83D\uDD25");
+        else
+            payload.commonLabels.put("icon", "\uD83D\uDC4C");
+
         Mustache template = getTemplate("prometheus.mustache");
         String text = execute(template, payload);
         int broadcast = broadcaster.broadcast(text, payload.commonLabels);

@@ -13,7 +13,8 @@
         "instance": "10.76.19.204:8081",
         "job": "jmx-exporter",
         "role": "ibis",
-        "severity": "critical"
+        "severity": "critical",
+        "icon": "🚨"
       },
       "annotations": {
         "summary": "ibis logs many errors"
@@ -31,7 +32,8 @@
     "job": "node",
     "service": "prometheus_bot",
     "severity": "warning",
-    "supervisor": "runit"
+    "supervisor": "runit",
+    "icon": "🔥"
   },
   "commonAnnotations": {
     "summary": "runit service prometheus_bot restarted, server01.int:9100"
