@@ -44,6 +44,7 @@ import java.util.Objects;
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrometheusResource {
     private final static MustacheFactory mf = new DefaultMustacheFactory();
+    private static final String PROMETHEUS_MUSTACHE = "prometheus.mustache";
     private final Broadcaster broadcaster;
 
     public PrometheusResource(ClientRepo repo) {
@@ -70,12 +71,12 @@ public class PrometheusResource {
                     build();
         }
 
-        if (payload.status.equals("firing"))
-            payload.commonLabels.put("icon", "\uD83D\uDD25");
-        else
-            payload.commonLabels.put("icon", "\uD83D\uDC4C");
+        String icon = payload.status.equals("firing")
+                ? "\uD83D\uDD25"
+                : "\uD83D\uDC4C";
+        payload.commonAnnotations.put("icon", icon);
 
-        Mustache template = getTemplate("prometheus.mustache");
+        Mustache template = getTemplate();
         String text = execute(template, payload);
         int broadcast = broadcaster.broadcast(text, payload.commonLabels);
 
@@ -86,8 +87,8 @@ public class PrometheusResource {
                 build();
     }
 
-    private Mustache getTemplate(String template) {
-        String path = String.format("templates/%s", template);
+    private Mustache getTemplate() {
+        String path = String.format("templates/%s", PROMETHEUS_MUSTACHE);
         return mf.compile(path);
     }
 }

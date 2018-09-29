@@ -32,11 +32,11 @@
     "job": "node",
     "service": "prometheus_bot",
     "severity": "warning",
-    "supervisor": "runit",
-    "icon": "🔥"
+    "supervisor": "runit"
   },
   "commonAnnotations": {
-    "summary": "runit service prometheus_bot restarted, server01.int:9100"
+    "summary": "runit service prometheus_bot restarted, server01.int:9100",
+    "icon": "🔥"
   },
   "externalURL": "https://alert-manager.example.com",
   "version": "3"
