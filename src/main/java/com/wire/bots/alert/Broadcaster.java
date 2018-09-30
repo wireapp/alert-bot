@@ -21,6 +21,7 @@ import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.tools.Logger;
 import com.wire.bots.sdk.user.UserClientRepo;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +35,7 @@ public class Broadcaster {
         this.db = new Database(Service.config.postgres);
     }
 
+    @Nullable
     private WireClient getWireClient(String botId) throws Exception {
         return repo instanceof UserClientRepo
                 ? ((UserClientRepo) repo).getWireClient(botId, db.getConversationId(botId))
@@ -48,11 +50,15 @@ public class Broadcaster {
         int count = 0;
         for (String botId : getBots()) {
             try {
-                boolean ret = filter(labels, db.getAnnotations(botId));
-                if (ret) {
+                if (filter(labels, db.getAnnotations(botId))) {
                     WireClient client = getWireClient(botId);
-                    client.sendText(text);
-                    count++;
+                    if (client != null) {
+                        client.sendText(text);
+                        count++;
+                    } else {
+                        Logger.warning("broadcast, client == null, bot: %s", botId);
+                        //db.unsubscribe(botId);
+                    }
                 }
             } catch (Exception e) {
                 Logger.error("broadcastText: %s Error: %s", botId, e);

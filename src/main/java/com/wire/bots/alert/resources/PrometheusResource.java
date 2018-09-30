@@ -65,7 +65,7 @@ public class PrometheusResource {
 
         String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
         if (!Objects.equals(token, challenge)) {
-            Logger.warning("Wrong Authorization: %s from %s", token, payload.externalURL);
+            Logger.error("Wrong Authorization: %s from %s", token, payload.externalURL);
             return Response.
                     status(401).
                     build();

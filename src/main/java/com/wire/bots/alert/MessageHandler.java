@@ -33,8 +33,7 @@ public class MessageHandler extends MessageHandlerBase {
             if (db.insertSubscriber(client.getId(), client.getConversationId()))
                 Logger.info("onNewConversation. New subscriber, %s", client.getId());
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error(e.getMessage());
+            Logger.error("onNewConversation: %s %s", client.getId(), e);
         }
     }
 
@@ -43,8 +42,7 @@ public class MessageHandler extends MessageHandlerBase {
         try {
             db.unsubscribe(botId);
         } catch (SQLException e) {
-            e.printStackTrace();
-            Logger.error(e.getMessage());
+            Logger.error("onBotRemoved: %s %s", botId, e);
         }
     }
 
@@ -82,7 +80,7 @@ public class MessageHandler extends MessageHandlerBase {
                 client.sendText("```\n" + sb.toString() + "```");
             }
         } catch (Exception e) {
-            Logger.warning("OnText: %s ex: %s", msg.getText(), e);
+            Logger.error("OnText: %s ex: %s", client.getId(), e);
         }
     }
 
