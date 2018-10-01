@@ -18,10 +18,10 @@ package com.wire.bots.alert;
 
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
+import com.wire.bots.sdk.exceptions.MissingStateException;
 import com.wire.bots.sdk.tools.Logger;
 import com.wire.bots.sdk.user.UserClientRepo;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -35,11 +35,10 @@ public class Broadcaster {
         this.db = new Database(Service.config.postgres);
     }
 
-    @Nullable
-    private WireClient getWireClient(String botId) throws Exception {
+    private WireClient getClient(String botId) throws Exception {
         return repo instanceof UserClientRepo
                 ? ((UserClientRepo) repo).getWireClient(botId, db.getConversationId(botId))
-                : repo.getWireClient(botId);
+                : repo.getClient(botId);
     }
 
     private ArrayList<String> getBots() throws Exception {
@@ -51,17 +50,32 @@ public class Broadcaster {
         for (String botId : getBots()) {
             try {
                 if (filter(labels, db.getAnnotations(botId))) {
-                    WireClient client = getWireClient(botId);
-                    if (client != null) {
-                        client.sendText(text);
-                        count++;
-                    } else {
-                        Logger.warning("broadcast, client == null, bot: %s", botId);
-                        //db.unsubscribe(botId);
-                    }
+                    WireClient client = getClient(botId);
+                    client.sendText(text);
+                    count++;
                 }
+            } catch (MissingStateException e) {
+                Logger.warning("Bot previously deleted. Bot: %s", botId);
             } catch (Exception e) {
                 Logger.error("broadcastText: %s Error: %s", botId, e);
+            }
+        }
+        return count;
+    }
+
+    public int call(Map<String, String> labels) throws Exception {
+        int count = 0;
+        for (String botId : getBots()) {
+            try {
+                if (filter(labels, db.getAnnotations(botId))) {
+                    WireClient client = getClient(botId);
+                    client.call("{\"version\":\"3.0\",\"type\":\"GROUPSTART\",\"sessid\":\"\",\"resp\":false}");
+                    count++;
+                }
+            } catch (MissingStateException e) {
+                Logger.warning("Bot previously deleted. Bot: %s", botId);
+            } catch (Exception e) {
+                Logger.error("called: %s Error: %s", botId, e);
             }
         }
         return count;

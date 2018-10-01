@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Objects;
 
 @Path("/prometheus")
@@ -61,30 +62,47 @@ public class PrometheusResource {
     @POST
     @Timed
     public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
-                            @NotNull @Valid Prometheus payload) throws Exception {
+                            @NotNull @Valid Prometheus payload) {
 
-        String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
-        if (!Objects.equals(token, challenge)) {
-            Logger.error("Wrong Authorization: %s from %s", token, payload.externalURL);
+        try {
+            String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
+            if (!Objects.equals(token, challenge)) {
+                Logger.error("Wrong Authorization: %s from %s", token, payload.externalURL);
+                return Response.
+                        status(401).
+                        build();
+            }
+
+            String icon = payload.status.equals("firing")
+                    ? "\uD83D\uDD25"
+                    : "\uD83D\uDC4C";
+            payload.commonAnnotations.put("icon", icon);
+
+            Mustache template = getTemplate();
+            String text = execute(template, payload);
+            int broadcast = broadcaster.broadcast(text, payload.commonLabels);
+
+            Logger.info("PrometheusResource: New payload from %s texted in %d convs", payload.externalURL, broadcast);
+
+            if (isCritical(payload.commonLabels)) {
+                int call = broadcaster.call(payload.commonLabels);
+                Logger.info("PrometheusResource: New payload from %s called in %d convs", payload.externalURL, call);
+            }
+
             return Response.
-                    status(401).
+                    accepted().
+                    build();
+        } catch (Exception e) {
+            Logger.error("PrometheusResource: %s %s", payload.externalURL, e);
+            return Response.
+                    serverError().
                     build();
         }
+    }
 
-        String icon = payload.status.equals("firing")
-                ? "\uD83D\uDD25"
-                : "\uD83D\uDC4C";
-        payload.commonAnnotations.put("icon", icon);
-
-        Mustache template = getTemplate();
-        String text = execute(template, payload);
-        int broadcast = broadcaster.broadcast(text, payload.commonLabels);
-
-        Logger.info("PrometheusResource: New payload from %s broadcast in %d convs", payload.externalURL, broadcast);
-
-        return Response.
-                accepted().
-                build();
+    private boolean isCritical(Map<String, String> commonLabels) {
+        String severity = commonLabels.get("severity");
+        return severity != null && severity.equals("critical");
     }
 
     private Mustache getTemplate() {
