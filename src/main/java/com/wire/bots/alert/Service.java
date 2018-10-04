@@ -19,6 +19,7 @@ package com.wire.bots.alert;
 
 import com.wire.bots.alert.model.Config;
 import com.wire.bots.alert.resources.PrometheusResource;
+import com.wire.bots.alert.resources.SimpleResource;
 import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.Server;
 import com.wire.bots.sdk.crypto.CryptoDatabase;
@@ -49,6 +50,7 @@ public class Service extends Server<Config> {
     @Override
     protected void onRun(Config config, Environment env) {
         addResource(new PrometheusResource(repo), env);
+        addResource(new SimpleResource(repo), env);
     }
 
     /**

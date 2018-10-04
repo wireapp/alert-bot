@@ -67,13 +67,13 @@ public class PrometheusResource {
         try {
             String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
             if (!Objects.equals(token, challenge)) {
-                Logger.error("Wrong Authorization: %s from %s", token, payload.externalURL);
+                Logger.warning("PrometheusResource: Wrong Authorization: %s from %s", token, payload.externalURL);
                 return Response.
                         status(401).
                         build();
             }
 
-            String icon = payload.status.equals("firing")
+            String icon = isFiring(payload.status)
                     ? "\uD83D\uDD25"
                     : "\uD83D\uDC4C";
             payload.commonAnnotations.put("icon", icon);
@@ -84,7 +84,7 @@ public class PrometheusResource {
 
             Logger.info("PrometheusResource: New payload from %s texted in %d convs", payload.externalURL, broadcast);
 
-            if (isCritical(payload.commonLabels)) {
+            if (isCritical(payload.commonLabels) && isFiring(payload.status) && isProd(payload.commonLabels)) {
                 int call = broadcaster.call(payload.commonLabels);
                 Logger.info("PrometheusResource: New payload from %s called in %d convs", payload.externalURL, call);
             }
@@ -100,9 +100,16 @@ public class PrometheusResource {
         }
     }
 
+    private boolean isFiring(String status) {
+        return Objects.equals(status, "firing");
+    }
+
     private boolean isCritical(Map<String, String> commonLabels) {
-        String severity = commonLabels.get("severity");
-        return severity != null && severity.equals("critical");
+        return Objects.equals(commonLabels.get("severity"), "critical");
+    }
+
+    private boolean isProd(Map<String, String> commonLabels) {
+        return Objects.equals(commonLabels.get("env"), "prod");
     }
 
     private Mustache getTemplate() {

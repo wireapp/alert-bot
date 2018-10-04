@@ -19,13 +19,24 @@ receivers:
 ...
 
 ```
-## How to send Prometheus alerts manually
+## How to send _Prometheus_ alerts manually
 ```
 curl 'localhost:8080/alert/prometheus' \
     -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
     -H "Content-Type:Application/Json" \
     -d @examples/prometheus.json
 ```
+
+## How to send a _Simple_ alert manually
+```
+curl 'localhost:8080/alert/simple' \
+    -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
+    -H "Content-Type:Application/Json" \
+    -d '{ "message" : "This is just a test" }'
+```
+
+## How the rendered alerts look like
+
 
 ## How to filter out alerts
 ```
