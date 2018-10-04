@@ -3,7 +3,7 @@
 
 This is alert bot for Wire.
 
-## Alert manager config
+## Prometheus Alert manager config
 ```
 ...
 
@@ -19,7 +19,7 @@ receivers:
 ...
 
 ```
-## How to send _Prometheus_ alerts manually
+## How to trigger a _Prometheus_ alert manually
 ```
 curl 'localhost:8080/alert/prometheus' \
     -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
@@ -27,7 +27,7 @@ curl 'localhost:8080/alert/prometheus' \
     -d @examples/prometheus.json
 ```
 
-## How to send a _Simple_ alert manually
+## How to trigger a _Simple_ alert manually
 ```
 curl 'localhost:8080/alert/simple' \
     -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
@@ -36,7 +36,7 @@ curl 'localhost:8080/alert/simple' \
 ```
 
 ## How the rendered alerts look like
-
+![Wire Desktop](https://i.imgur.com/AOQ7Ecq.png)
 
 ## How to filter out alerts
 ```
@@ -49,5 +49,5 @@ This will make that only warnings that contain _label_ `service=ibis` would be d
 ```
 
 ## Whitelist users that can receive alerts
-comma separated list of Wire `username` in `whitelist` in the `config`.
+comma separated list of Wire `usernames` in `whitelist` in the `config`.
 Leave the list empty if you want to allow everybody to join.            
