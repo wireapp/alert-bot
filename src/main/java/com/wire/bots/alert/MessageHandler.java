@@ -32,6 +32,9 @@ public class MessageHandler extends MessageHandlerBase {
         try {
             if (db.insertSubscriber(client.getId(), client.getConversationId()))
                 Logger.info("onNewConversation. New subscriber, %s", client.getId());
+
+            String msg = String.format("`POST https://services.wire.com/alert/simple/%s`", client.getId());
+            client.sendText(msg);
         } catch (Exception e) {
             Logger.error("onNewConversation: %s %s", client.getId(), e);
         }

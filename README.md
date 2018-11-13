@@ -29,8 +29,7 @@ curl 'localhost:8080/alert/prometheus' \
 
 ## How to trigger a _Simple_ alert manually
 ```
-curl 'localhost:8080/alert/simple' \
-    -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
+curl 'localhost:8080/alert/simple/$BOT_ID' \
     -H "Content-Type:Application/Json" \
     -d '{ "message" : "This is just a test" }'
 ```

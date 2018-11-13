@@ -55,7 +55,7 @@ public class Broadcaster {
                     count++;
                 }
             } catch (MissingStateException e) {
-                Logger.warning("Bot previously deleted. Bot: %s", botId);
+                Logger.info("Bot previously deleted. Bot: %s", botId);
             } catch (Exception e) {
                 Logger.error("broadcastText: %s Error: %s", botId, e);
             }
@@ -73,7 +73,7 @@ public class Broadcaster {
                     count++;
                 }
             } catch (MissingStateException e) {
-                Logger.warning("Bot previously deleted. Bot: %s", botId);
+                Logger.info("Bot previously deleted. Bot: %s", botId);
             } catch (Exception e) {
                 Logger.error("called: %s Error: %s", botId, e);
             }
@@ -82,6 +82,9 @@ public class Broadcaster {
     }
 
     private boolean filter(Map<String, String> first, Map<String, String> second) {
+        if (second.isEmpty())
+            return false;
+
         for (String key : first.keySet()) {
             String value = second.get(key);
             if (value != null && !Objects.equals(value, first.get(key))) {

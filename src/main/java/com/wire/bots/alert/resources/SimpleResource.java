@@ -18,52 +18,49 @@
 package com.wire.bots.alert.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.wire.bots.alert.Broadcaster;
-import com.wire.bots.alert.Service;
 import com.wire.bots.alert.model.Simple;
 import com.wire.bots.sdk.ClientRepo;
+import com.wire.bots.sdk.WireClient;
+import com.wire.bots.sdk.exceptions.MissingStateException;
 import com.wire.bots.sdk.tools.Logger;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Objects;
 
-@Path("/simple")
+@Path("/simple/{botId}")
 @Consumes(MediaType.APPLICATION_JSON)
 public class SimpleResource {
-    private final Broadcaster broadcaster;
+    private final ClientRepo repo;
 
     public SimpleResource(ClientRepo repo) {
-        broadcaster = new Broadcaster(repo);
+        this.repo = repo;
     }
 
     @POST
     @Timed
-    public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
+    public Response webhook(@PathParam("botId") String botId,
                             @NotNull @Valid Simple payload) {
 
         try {
-            String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
-            if (!Objects.equals(token, challenge)) {
-                Logger.warning("SimpleResource: Wrong Authorization: %s", token);
-                return Response.
-                        status(401).
-                        build();
-            }
 
-            int broadcast = broadcaster.broadcast(payload.message, new HashMap<>());
+            WireClient client = repo.getClient(botId);
+            client.sendText(payload.message);
 
-            Logger.info("SimpleResource: New payload texted in %d convs", broadcast);
+            Logger.info("SimpleResource: New payload texted");
 
             return Response.
                     accepted().
+                    build();
+        } catch (MissingStateException e) {
+            Logger.info("SimpleResource: %s", e);
+            return Response.
+                    status(404).
                     build();
         } catch (Exception e) {
             Logger.error("SimpleResource: %s", e);
