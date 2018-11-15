@@ -26,15 +26,13 @@ import com.wire.bots.sdk.tools.Logger;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/simple/{botId}")
 @Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class SimpleResource {
     private final ClientRepo repo;
 
@@ -44,26 +42,23 @@ public class SimpleResource {
 
     @POST
     @Timed
-    public Response webhook(@PathParam("botId") String botId,
-                            @NotNull @Valid Simple payload) {
-
+    public Response webhook(@PathParam("botId") String botId, @NotNull @Valid Simple payload) {
         try {
-
             WireClient client = repo.getClient(botId);
             client.sendText(payload.message);
 
-            Logger.info("SimpleResource: New payload texted");
+            Logger.info("%s SimpleResource: New payload texted", botId);
 
             return Response.
                     accepted().
                     build();
         } catch (MissingStateException e) {
-            Logger.info("SimpleResource: %s", e);
+            Logger.info("%s SimpleResource: %s", botId, e);
             return Response.
                     status(404).
                     build();
         } catch (Exception e) {
-            Logger.error("SimpleResource: %s", e);
+            Logger.error("%s SimpleResource: %s", botId, e);
             return Response.
                     serverError().
                     build();
