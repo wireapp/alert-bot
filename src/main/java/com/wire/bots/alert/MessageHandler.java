@@ -16,7 +16,7 @@ public class MessageHandler extends MessageHandlerBase {
 
     MessageHandler(Config config) {
         this.config = config;
-        db = new Database(Service.config.getPostgres());
+        db = new Database(config);
     }
 
     @Override

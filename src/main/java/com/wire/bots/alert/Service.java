@@ -18,6 +18,7 @@
 package com.wire.bots.alert;
 
 import com.wire.bots.alert.model.Config;
+import com.wire.bots.alert.resources.BroadcastResource;
 import com.wire.bots.alert.resources.PrometheusResource;
 import com.wire.bots.alert.resources.SimpleResource;
 import com.wire.bots.sdk.MessageHandlerBase;
@@ -51,6 +52,7 @@ public class Service extends Server<Config> {
     protected void onRun(Config config, Environment env) {
         addResource(new PrometheusResource(repo), env);
         addResource(new SimpleResource(repo), env);
+        addResource(new BroadcastResource(repo), env);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.wire.bots.alert;
 
+import com.wire.bots.alert.model.Config;
 import com.wire.bots.sdk.Configuration;
 
 import java.sql.*;
@@ -9,17 +10,18 @@ import java.util.Map;
 import java.util.UUID;
 
 class Database {
-    private final Configuration.DB conf;
+    private final Config conf;
 
-    Database(Configuration.DB conf) {
+    Database(Config conf) {
         this.conf = conf;
     }
 
     boolean insertSubscriber(String botId, String convId) throws Exception {
         try (Connection c = newConnection()) {
-            PreparedStatement stmt = c.prepareStatement("INSERT INTO Alert (botId, conversationId) VALUES (?, ?)");
+            PreparedStatement stmt = c.prepareStatement("INSERT INTO Alert (botId, conversationId, serviceId) VALUES (?, ?, ?)");
             stmt.setObject(1, UUID.fromString(botId));
             stmt.setObject(2, UUID.fromString(convId));
+            stmt.setObject(3, conf.getServiceId());
             return stmt.executeUpdate() == 1;
         }
     }
@@ -28,6 +30,19 @@ class Database {
         ArrayList<String> ret = new ArrayList<>();
         try (Connection c = newConnection()) {
             PreparedStatement stmt = c.prepareStatement("SELECT botId FROM Alert");
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                ret.add(resultSet.getString("botId"));
+            }
+        }
+        return ret;
+    }
+
+    ArrayList<String> getMySubscribers() throws Exception {
+        ArrayList<String> ret = new ArrayList<>();
+        try (Connection c = newConnection()) {
+            PreparedStatement stmt = c.prepareStatement("SELECT botId FROM Alert WHERE serviceId = ?");
+            stmt.setObject(1, conf.getServiceId());
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 ret.add(resultSet.getString("botId"));
@@ -82,8 +97,9 @@ class Database {
     }
 
     private Connection newConnection() throws SQLException {
-        String url = String.format("jdbc:%s://%s:%d/%s", conf.driver, conf.host, conf.port, conf.database);
-        return DriverManager.getConnection(url, conf.user, conf.password);
+        Configuration.DB postgres = conf.getPostgres();
+        String url = String.format("jdbc:%s://%s:%d/%s", postgres.driver, postgres.host, postgres.port, postgres.database);
+        return DriverManager.getConnection(url, postgres.user, postgres.password);
     }
 
     boolean removeAnnotation(String botId, String key, String value) throws SQLException {

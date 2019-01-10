@@ -6,6 +6,8 @@ server:
   requestLog:
     appenders: []
 
+serviceId: ${ALERT_SERVICE_ID}
+
 auth: ${ALERT_SERVICE_TOKEN}
 
 postgres:

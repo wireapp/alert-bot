@@ -32,7 +32,7 @@ public class Broadcaster {
 
     public Broadcaster(ClientRepo repo) {
         this.repo = repo;
-        this.db = new Database(Service.config.postgres);
+        this.db = new Database(Service.config);
     }
 
     private WireClient getClient(String botId) throws Exception {
@@ -54,6 +54,22 @@ public class Broadcaster {
                     client.sendText(text);
                     count++;
                 }
+            } catch (MissingStateException e) {
+                Logger.info("Bot previously deleted. Bot: %s", botId);
+            } catch (Exception e) {
+                Logger.error("broadcastText: %s Error: %s", botId, e);
+            }
+        }
+        return count;
+    }
+
+    public int broadcast(String text) throws Exception {
+        int count = 0;
+        for (String botId : db.getMySubscribers()) {
+            try {
+                WireClient client = getClient(botId);
+                client.sendText(text);
+                count++;
             } catch (MissingStateException e) {
                 Logger.info("Bot previously deleted. Bot: %s", botId);
             } catch (Exception e) {

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wire.bots.sdk.Configuration;
 
 import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Config extends Configuration {
@@ -37,6 +38,10 @@ public class Config extends Configuration {
     @NotNull
     public DB postgres = new DB();
 
+    @JsonProperty
+    @NotNull
+    public UUID serviceId;
+
     public DB getPostgres() {
         return postgres;
     }
@@ -47,5 +52,9 @@ public class Config extends Configuration {
 
     public String getPrometheusToken() {
         return prometheusToken;
+    }
+
+    public UUID getServiceId() {
+        return serviceId;
     }
 }
