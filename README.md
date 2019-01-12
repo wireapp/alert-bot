@@ -34,6 +34,14 @@ curl 'localhost:8080/alert/simple/$BOT_ID' \
     -d '{ "message" : "This is just a test" }'
 ```
 
+## How to trigger a _Simple_ broadcast manually
+```
+curl 'localhost:8080/alert/broadcast' \
+    -H "Authorization:Bearer $ALERT_PROMETHEUS_TOKEN" \
+    -H "Content-Type:Application/Json" \
+    -d '{ "message" : "This is just a test" }'
+```
+
 ## How the rendered alerts look like
 ![Wire Desktop](https://i.imgur.com/AOQ7Ecq.png)
 

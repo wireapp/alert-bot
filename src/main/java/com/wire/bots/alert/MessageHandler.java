@@ -29,14 +29,17 @@ public class MessageHandler extends MessageHandlerBase {
 
     @Override
     public void onNewConversation(WireClient client) {
-        try {
-            if (db.insertSubscriber(client.getId(), client.getConversationId()))
-                Logger.info("onNewConversation. New subscriber, %s", client.getId());
+        String botId = client.getId();
+        String convId = client.getConversationId();
 
-            String msg = String.format("`POST https://services.wire.com/alert/simple/%s`", client.getId());
+        try {
+            if (db.insertSubscriber(botId, convId))
+                Logger.info("onNewConversation. New subscriber, %s", botId);
+
+            String msg = String.format("`POST https://services.wire.com/alert/simple/%s`", botId);
             client.sendText(msg);
         } catch (Exception e) {
-            Logger.error("onNewConversation: %s %s", client.getId(), e);
+            Logger.error("onNewConversation: %s %s", botId, e);
         }
     }
 
