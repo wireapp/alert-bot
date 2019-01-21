@@ -22,7 +22,6 @@ db:
   host: localhost
   port: 6379 #redis
   user: admin
-  password: ${REDIS_PASSWORD}
 
 prometheusToken: ${ALERT_PROMETHEUS_TOKEN}
 
