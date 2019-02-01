@@ -26,6 +26,9 @@ import com.wire.bots.alert.Service;
 import com.wire.bots.alert.model.Prometheus;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.tools.Logger;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -41,6 +44,7 @@ import java.io.StringWriter;
 import java.util.Map;
 import java.util.Objects;
 
+@Api
 @Path("/prometheus")
 @Consumes(MediaType.APPLICATION_JSON)
 public class PrometheusResource {
@@ -61,8 +65,9 @@ public class PrometheusResource {
 
     @POST
     @Timed
-    public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
-                            @NotNull @Valid Prometheus payload) {
+    @ApiOperation(value = "Broadcast prometheus object on Wire")
+    public Response webhook(@ApiParam("Bearer token") @NotNull @Valid @HeaderParam("Authorization") String token,
+                            @ApiParam @NotNull @Valid Prometheus payload) {
 
         try {
             String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());

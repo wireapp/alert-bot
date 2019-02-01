@@ -6,9 +6,16 @@ server:
   requestLog:
     appenders: []
 
-serviceId: ${ALERT_SERVICE_ID}
+swagger:
+  resourcePackage: com.wire.bots.alert.resources,com.wire.bots.sdk.server.resources
+  uriPrefix: /alert
+  schemes:
+    - http
+    - https
 
+serviceId: ${ALERT_SERVICE_ID}
 auth: ${ALERT_SERVICE_TOKEN}
+prometheusToken: ${ALERT_PROMETHEUS_TOKEN}
 
 postgres:
   host: localhost
@@ -22,7 +29,5 @@ db:
   host: localhost
   port: 6379 #redis
   user: admin
-
-prometheusToken: ${ALERT_PROMETHEUS_TOKEN}
 
 whitelist:

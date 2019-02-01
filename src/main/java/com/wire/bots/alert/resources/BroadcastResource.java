@@ -23,6 +23,9 @@ import com.wire.bots.alert.Service;
 import com.wire.bots.alert.model.Simple;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.tools.Logger;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -31,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Objects;
 
+@Api
 @Path("/broadcast")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,8 +47,9 @@ public class BroadcastResource {
 
     @POST
     @Timed
-    public Response webhook(@NotNull @Valid @HeaderParam("Authorization") String token,
-                            @NotNull @Valid Simple payload) {
+    @ApiOperation(value = "Broadcast message on Wire")
+    public Response webhook(@ApiParam("Bearer token") @NotNull @Valid @HeaderParam("Authorization") String token,
+                            @ApiParam @NotNull @Valid Simple payload) {
 
         try {
             String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());

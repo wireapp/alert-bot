@@ -23,6 +23,9 @@ import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.exceptions.MissingStateException;
 import com.wire.bots.sdk.tools.Logger;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -30,6 +33,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Api
 @Path("/simple/{botId}")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,7 +46,9 @@ public class SimpleResource {
 
     @POST
     @Timed
-    public Response webhook(@PathParam("botId") String botId, @NotNull @Valid Simple payload) {
+    @ApiOperation(value = "Post message on Wire")
+    public Response webhook(@ApiParam @PathParam("botId") String botId,
+                            @ApiParam @NotNull @Valid Simple payload) {
         try {
             WireClient client = repo.getClient(botId);
             client.sendText(payload.message);
