@@ -9,6 +9,7 @@ import com.wire.bots.sdk.tools.Logger;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 
 public class MessageHandler extends MessageHandlerBase {
     private final Config config;
@@ -30,10 +31,10 @@ public class MessageHandler extends MessageHandlerBase {
     @Override
     public void onNewConversation(WireClient client) {
         String botId = client.getId();
-        String convId = client.getConversationId();
+        UUID convId = client.getConversationId();
 
         try {
-            if (db.insertSubscriber(botId, convId))
+            if (db.insertSubscriber(botId, convId.toString()))
                 Logger.info("onNewConversation. New subscriber, %s", botId);
 
             String msg = String.format("`POST https://services.wire.com/alert/simple/%s`", botId);

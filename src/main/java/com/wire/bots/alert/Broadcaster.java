@@ -25,6 +25,7 @@ import com.wire.bots.sdk.user.UserClientRepo;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Broadcaster {
     private final ClientRepo repo;
@@ -37,7 +38,9 @@ public class Broadcaster {
 
     private WireClient getClient(String botId) throws Exception {
         return repo instanceof UserClientRepo
-                ? ((UserClientRepo) repo).getWireClient(botId, db.getConversationId(botId))
+                ? ((UserClientRepo) repo).getWireClient(
+                UUID.fromString(botId),
+                UUID.fromString(db.getConversationId(botId)))
                 : repo.getClient(botId);
     }
 
