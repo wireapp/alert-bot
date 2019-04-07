@@ -1,4 +1,4 @@
-FROM dejankovacevic/bots.runtime:2.10.2
+FROM dejankovacevic/bots.runtime:2.10.3
 
 COPY target/alertbot.jar   /opt/alert/alertbot.jar
 COPY alertbot.yaml         /etc/alert/alertbot.yaml
