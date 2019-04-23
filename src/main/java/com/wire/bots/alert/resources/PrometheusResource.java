@@ -70,7 +70,7 @@ public class PrometheusResource {
                             @ApiParam @NotNull @Valid Prometheus payload) {
 
         try {
-            String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
+            String challenge = String.format("Bearer %s", Service.instance.getConfig().getPrometheusToken());
             if (!Objects.equals(token, challenge)) {
                 Logger.warning("PrometheusResource: Wrong Authorization: %s from %s", token, payload.externalURL);
                 return Response.

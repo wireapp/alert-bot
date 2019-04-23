@@ -33,7 +33,7 @@ public class Broadcaster {
 
     public Broadcaster(ClientRepo repo) {
         this.repo = repo;
-        this.db = new Database(Service.config);
+        this.db = new Database(Service.instance.getConfig());
     }
 
     private WireClient getClient(String botId) throws Exception {

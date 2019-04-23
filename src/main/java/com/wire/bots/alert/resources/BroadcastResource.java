@@ -52,7 +52,7 @@ public class BroadcastResource {
                             @ApiParam @NotNull @Valid Simple payload) {
 
         try {
-            String challenge = String.format("Bearer %s", Service.config.getPrometheusToken());
+            String challenge = String.format("Bearer %s", Service.instance.getConfig().getPrometheusToken());
             if (!Objects.equals(token, challenge)) {
                 Logger.warning("BroadcastResource: Wrong Authorization: %s", token);
                 return Response.
