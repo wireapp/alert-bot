@@ -29,6 +29,7 @@ import com.wire.bots.sdk.tools.Logger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.skife.jdbi.v2.DBI;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -52,8 +53,9 @@ public class PrometheusResource {
     private static final String PROMETHEUS_MUSTACHE = "prometheus.mustache";
     private final Broadcaster broadcaster;
 
-    public PrometheusResource(ClientRepo repo) {
-        broadcaster = new Broadcaster(repo);
+    public PrometheusResource(DBI dbi, ClientRepo repo) {
+
+        broadcaster = new Broadcaster(dbi, repo);
     }
 
     private static String execute(Mustache mustache, Object model) throws IOException {
@@ -70,7 +72,7 @@ public class PrometheusResource {
                             @ApiParam @NotNull @Valid Prometheus payload) {
 
         try {
-            String challenge = String.format("Bearer %s", Service.instance.getConfig().getPrometheusToken());
+            String challenge = String.format("Bearer %s", Service.instance.getConfig().prometheusToken);
             if (!Objects.equals(token, challenge)) {
                 Logger.warning("PrometheusResource: Wrong Authorization: %s from %s", token, payload.externalURL);
                 return Response.

@@ -42,19 +42,15 @@ public class Service extends Server<Config> {
     }
 
     @Override
-    protected void initialize(Config config, Environment env) {
-        env.jersey().setUrlPattern("/alert/*");
-    }
-
-    @Override
     protected MessageHandlerBase createHandler(Config config, Environment env) {
-        return new MessageHandler(config);
+
+        return new MessageHandler(getJdbi());
     }
 
     @Override
     protected void onRun(Config config, Environment env) {
-        addResource(new PrometheusResource(repo), env);
-        addResource(new SimpleResource(repo), env);
-        addResource(new BroadcastResource(repo), env);
+        addResource(new PrometheusResource(getJdbi(), repo));
+        addResource(new SimpleResource(repo));
+        addResource(new BroadcastResource(getJdbi(), repo));
     }
 }
