@@ -26,6 +26,7 @@ import com.wire.bots.sdk.tools.Logger;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.skife.jdbi.v2.DBI;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -41,8 +42,8 @@ import java.util.Objects;
 public class BroadcastResource {
     private final Broadcaster broadcaster;
 
-    public BroadcastResource(ClientRepo repo) {
-        broadcaster = new Broadcaster(repo);
+    public BroadcastResource(DBI dbi, ClientRepo repo) {
+        broadcaster = new Broadcaster(dbi, repo);
     }
 
     @POST
@@ -52,7 +53,7 @@ public class BroadcastResource {
                             @ApiParam @NotNull @Valid Simple payload) {
 
         try {
-            String challenge = String.format("Bearer %s", Service.instance.getConfig().getPrometheusToken());
+            String challenge = String.format("Bearer %s", Service.instance.getConfig().prometheusToken);
             if (!Objects.equals(token, challenge)) {
                 Logger.warning("BroadcastResource: Wrong Authorization: %s", token);
                 return Response.

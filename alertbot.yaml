@@ -1,33 +1,46 @@
 server:
-  applicationConnectors:
-    - type: http
-      port: 8080
+  rootPath: /alert/*
 
   requestLog:
-    appenders: []
+    appenders:
+      - type: ${APPENDER_TYPE:-console}
+        filterFactories:
+          - type: status-filter-factory
+
+logging:
+  level: INFO
+  appenders:
+    - type: ${APPENDER_TYPE:-console}
+  loggers:
+    "com.wire.bots.logger": ${LOG_LEVEL:-INFO}
 
 swagger:
-  resourcePackage: com.wire.bots.alert.resources,com.wire.bots.sdk.server.resources
-  uriPrefix: /alert
+  resourcePackage: com.wire.bots.alert.resources
   schemes:
     - http
     - https
 
-serviceId: ${ALERT_SERVICE_ID}
-auth: ${ALERT_SERVICE_TOKEN}
-prometheusToken: ${ALERT_PROMETHEUS_TOKEN}
+jerseyClient:
+  timeout: 20s
+  connectionTimeout: 4s
+  connectionRequestTimeout: 4s
+  keepAlive: 0ms
+  retries: 3
+  userAgent: roman
+  tls:
+    protocol: TLSv1.2
+    provider: SunJSSE
+    supportedProtocols:
+      - TLSv1.1
+      - TLSv1.2
 
-postgres:
-  host: localhost
-  port: 5432
-  database: postgres
-  driver: postgresql
-  user: admin
-  password: ${POSTGRES_PASSWORD}
+database:
+  driverClass: org.postgresql.Driver
+  url: ${DB_URL:-jdbc:postgresql://localhost/alert}
+  user: ${DB_USER:-}
+  password: ${DB_PASSWORD:-}
+  baseline: ${DB_BASELINE:-}
 
-db:
-  host: localhost
-  port: 6379 #redis
-  user: admin
-
-whitelist:
+serviceToken: ${SERVICE_TOKEN:-}
+prometheusToken: ${PROMETHEUS_TOKEN:-}
+whitelist: ${WHITELIST:-}

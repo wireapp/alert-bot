@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.UUID;
 
 @Api
 @Path("/simple/{botId}")
@@ -47,7 +48,7 @@ public class SimpleResource {
     @POST
     @Timed
     @ApiOperation(value = "Post message on Wire")
-    public Response webhook(@ApiParam @PathParam("botId") String botId,
+    public Response webhook(@ApiParam @PathParam("botId") UUID botId,
                             @ApiParam @NotNull @Valid Simple payload) {
         try {
             WireClient client = repo.getClient(botId);

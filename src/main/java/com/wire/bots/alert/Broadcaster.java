@@ -20,9 +20,9 @@ import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.exceptions.MissingStateException;
 import com.wire.bots.sdk.tools.Logger;
-import com.wire.bots.sdk.user.UserClientRepo;
+import org.skife.jdbi.v2.DBI;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,26 +31,22 @@ public class Broadcaster {
     private final ClientRepo repo;
     private final Database db;
 
-    public Broadcaster(ClientRepo repo) {
+    public Broadcaster(DBI dbi, ClientRepo repo) {
         this.repo = repo;
-        this.db = new Database(Service.instance.getConfig());
+        this.db = new Database(dbi);
     }
 
-    private WireClient getClient(String botId) throws Exception {
-        return repo instanceof UserClientRepo
-                ? ((UserClientRepo) repo).getWireClient(
-                UUID.fromString(botId),
-                UUID.fromString(db.getConversationId(botId)))
-                : repo.getClient(botId);
+    private WireClient getClient(UUID botId) throws Exception {
+        return repo.getClient(botId);
     }
 
-    private ArrayList<String> getBots() throws Exception {
+    private List<UUID> getBots() {
         return db.getSubscribers();
     }
 
-    public int broadcast(String text, Map<String, String> labels) throws Exception {
+    public int broadcast(String text, Map<String, String> labels) {
         int count = 0;
-        for (String botId : getBots()) {
+        for (UUID botId : getBots()) {
             try {
                 if (filter(labels, db.getAnnotations(botId))) {
                     WireClient client = getClient(botId);
@@ -66,9 +62,9 @@ public class Broadcaster {
         return count;
     }
 
-    public int broadcast(String text) throws Exception {
+    public int broadcast(String text) {
         int count = 0;
-        for (String botId : db.getMySubscribers()) {
+        for (UUID botId : db.getSubscribers()) {
             try {
                 WireClient client = getClient(botId);
                 client.sendText(text);
@@ -82,9 +78,9 @@ public class Broadcaster {
         return count;
     }
 
-    public int call(Map<String, String> labels) throws Exception {
+    public int call(Map<String, String> labels) {
         int count = 0;
-        for (String botId : getBots()) {
+        for (UUID botId : getBots()) {
             try {
                 if (filter(labels, db.getAnnotations(botId))) {
                     WireClient client = getClient(botId);

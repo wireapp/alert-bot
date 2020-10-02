@@ -5,36 +5,37 @@ import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.models.TextMessage;
 import com.wire.bots.sdk.server.model.NewBot;
+import com.wire.bots.sdk.server.model.SystemMessage;
 import com.wire.bots.sdk.tools.Logger;
+import org.skife.jdbi.v2.DBI;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
 public class MessageHandler extends MessageHandlerBase {
-    private final Config config;
     private final Database db;
 
-    MessageHandler(Config config) {
-        this.config = config;
-        db = new Database(config);
+    MessageHandler(DBI dbi) {
+        db = new Database(dbi);
     }
 
     @Override
-    public boolean onNewBot(NewBot newBot) {
+    public boolean onNewBot(NewBot newBot, String serviceToken) {
         Logger.info(String.format("onNewBot: bot: %s, user: %s",
                 newBot.id,
                 newBot.origin.id));
-        return !checkWhitelist(newBot.origin.handle, config.getWhitelist());
+
+        final Config config = Service.instance.getConfig();
+        return !checkWhitelist(newBot.origin.handle, config.whitelist);
     }
 
     @Override
-    public void onNewConversation(WireClient client) {
-        String botId = client.getId();
+    public void onNewConversation(WireClient client, SystemMessage message) {
+        UUID botId = client.getId();
         UUID convId = client.getConversationId();
 
         try {
-            if (db.insertSubscriber(botId, convId.toString()))
+            if (1 == db.insertSubscriber(botId, convId))
                 Logger.info("onNewConversation. New subscriber, %s", botId);
 
             String msg = String.format("`POST https://services.wire.com/alert/simple/%s`", botId);
@@ -45,18 +46,16 @@ public class MessageHandler extends MessageHandlerBase {
     }
 
     @Override
-    public void onBotRemoved(String botId) {
-        try {
-            db.unsubscribe(botId);
-        } catch (SQLException e) {
-            Logger.error("onBotRemoved: %s %s", botId, e);
+    public void onBotRemoved(UUID botId, SystemMessage msg) {
+        if (1 == db.unsubscribe(botId)) {
+            Logger.info("onBotRemoved: %s %s", botId);
         }
     }
 
     @Override
     public void onText(WireClient client, TextMessage msg) {
         try {
-            String botId = client.getId();
+            UUID botId = client.getId();
             String[] split = msg.getText().toLowerCase().trim().split(" ");
             String command = split[0];
 
@@ -65,12 +64,12 @@ public class MessageHandler extends MessageHandlerBase {
                 String key = split[2];
                 String value = split[3];
 
-                if (subCommand.equals("add") && db.insertAnnotation(botId, key, value)) {
+                if (subCommand.equals("add") && 1 == db.insertAnnotation(botId, key, value)) {
                     String text = String.format("Ok, filtering for `%s=%s`", key, value);
                     client.sendText(text);
                 }
 
-                if (subCommand.equals("remove") && db.removeAnnotation(botId, key, value)) {
+                if (subCommand.equals("remove") && 1 == db.removeAnnotation(botId, key, value)) {
                     String text = String.format("Ok, removed filtering for `%s=%s`", key, value);
                     client.sendText(text);
                 }
@@ -93,8 +92,7 @@ public class MessageHandler extends MessageHandlerBase {
 
     private boolean checkWhitelist(String handle, String whitelist) {
         if (whitelist != null && !whitelist.isEmpty()) {
-            if (!isWhitelisted(handle, whitelist))
-                return true;
+            return !isWhitelisted(handle, whitelist);
         }
         return false;
     }
