@@ -21,12 +21,12 @@ swagger:
     - https
 
 jerseyClient:
-  timeout: 20s
-  connectionTimeout: 4s
-  connectionRequestTimeout: 4s
+  timeout: 40s
+  connectionTimeout: 40s
+  connectionRequestTimeout: 40s
   keepAlive: 0ms
   retries: 3
-  userAgent: roman
+  userAgent: alertbot
   tls:
     protocol: TLSv1.2
     provider: SunJSSE
@@ -39,7 +39,6 @@ database:
   url: ${DB_URL:-jdbc:postgresql://localhost/alert}
   user: ${DB_USER:-}
   password: ${DB_PASSWORD:-}
-  baseline: ${DB_BASELINE:-}
 
 serviceToken: ${SERVICE_TOKEN:-}
 prometheusToken: ${PROMETHEUS_TOKEN:-}

@@ -1,5 +1,6 @@
 package com.wire.bots.alert;
 
+import com.wire.bots.alert.DAO.AnnotationsDAO;
 import com.wire.bots.alert.model.Config;
 import com.wire.bots.sdk.MessageHandlerBase;
 import com.wire.bots.sdk.WireClient;
@@ -9,7 +10,7 @@ import com.wire.bots.sdk.server.model.SystemMessage;
 import com.wire.bots.sdk.tools.Logger;
 import org.skife.jdbi.v2.DBI;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 public class MessageHandler extends MessageHandlerBase {
@@ -76,12 +77,12 @@ public class MessageHandler extends MessageHandlerBase {
             }
 
             if (command.equals("/labels")) {
-                Map<String, String> annotations = db.getAnnotations(botId);
+                final List<AnnotationsDAO.Annotation> annotations = db.getAnnotations(botId);
                 StringBuilder sb = new StringBuilder();
                 if (annotations.isEmpty())
                     sb.append("No labels");
-                for (String k : annotations.keySet()) {
-                    sb.append(k).append("=").append(annotations.get(k)).append("\n");
+                for (AnnotationsDAO.Annotation annotation : annotations) {
+                    sb.append(annotation.label).append("=").append(annotation.value).append("\n");
                 }
                 client.sendText("```\n" + sb.toString() + "```");
             }

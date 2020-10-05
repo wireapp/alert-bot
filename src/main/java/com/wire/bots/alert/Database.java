@@ -5,7 +5,6 @@ import com.wire.bots.alert.DAO.AnnotationsDAO;
 import org.skife.jdbi.v2.DBI;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 class Database {
@@ -34,7 +33,7 @@ class Database {
         return annotationsDAO.insert(botId, key, value);
     }
 
-    Map<String, String> getAnnotations(UUID botId) {
+    List<AnnotationsDAO.Annotation> getAnnotations(UUID botId) {
         return annotationsDAO.get(botId);
     }
 

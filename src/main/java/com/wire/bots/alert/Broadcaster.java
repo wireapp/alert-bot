@@ -16,6 +16,7 @@
 //
 package com.wire.bots.alert;
 
+import com.wire.bots.alert.DAO.AnnotationsDAO;
 import com.wire.bots.sdk.ClientRepo;
 import com.wire.bots.sdk.WireClient;
 import com.wire.bots.sdk.exceptions.MissingStateException;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Broadcaster {
     private final ClientRepo repo;
@@ -47,9 +49,8 @@ public class Broadcaster {
     public int broadcast(String text, Map<String, String> labels) {
         int count = 0;
         for (UUID botId : getBots()) {
-            try {
+            try (WireClient client = getClient(botId)) {
                 if (filter(labels, db.getAnnotations(botId))) {
-                    WireClient client = getClient(botId);
                     client.sendText(text);
                     count++;
                 }
@@ -65,8 +66,7 @@ public class Broadcaster {
     public int broadcast(String text) {
         int count = 0;
         for (UUID botId : db.getSubscribers()) {
-            try {
-                WireClient client = getClient(botId);
+            try (WireClient client = getClient(botId)) {
                 client.sendText(text);
                 count++;
             } catch (MissingStateException e) {
@@ -81,9 +81,8 @@ public class Broadcaster {
     public int call(Map<String, String> labels) {
         int count = 0;
         for (UUID botId : getBots()) {
-            try {
+            try (WireClient client = getClient(botId)) {
                 if (filter(labels, db.getAnnotations(botId))) {
-                    WireClient client = getClient(botId);
                     client.call("{\"version\":\"3.0\",\"type\":\"GROUPSTART\",\"sessid\":\"\",\"resp\":false}");
                     count++;
                 }
@@ -96,20 +95,23 @@ public class Broadcaster {
         return count;
     }
 
-    private boolean filter(Map<String, String> first, Map<String, String> second) {
-        if (second.isEmpty())
+    private boolean filter(Map<String, String> first, List<AnnotationsDAO.Annotation> secondL) {
+        if (secondL.isEmpty())
             return false;
 
+        Map<String, AnnotationsDAO.Annotation> second = secondL.stream()
+                .collect(Collectors.toMap(AnnotationsDAO.Annotation::getLabel, x -> x));
+
         for (String key : first.keySet()) {
-            String value = second.get(key);
-            if (value != null && !Objects.equals(value, first.get(key))) {
+            final AnnotationsDAO.Annotation s = second.get(key);
+            if (s != null && !Objects.equals(s.value, first.get(key))) {
                 return false;
             }
         }
 
-        for (String key : second.keySet()) {
-            String value = first.get(key);
-            if (value != null && !Objects.equals(value, second.get(key))) {
+        for (AnnotationsDAO.Annotation annotation : secondL) {
+            final String value = first.get(annotation.label);
+            if (value != null && !Objects.equals(value, annotation.value)) {
                 return false;
             }
         }

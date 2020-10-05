@@ -33,7 +33,6 @@ public class MessageTemplateTest {
         Assert.assertEquals("Wrong message", expected, message);
     }
 
-
     // ------------------- Tests -------------------
 
     private Mustache compileTemplate(String template) {
